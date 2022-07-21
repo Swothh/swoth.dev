@@ -1,4 +1,5 @@
 import '../public/css/global.css';
+import '../public/css/tippy.css';
 import 'tailwindcss/tailwind.css';
 import NProgress from 'nprogress';
 import Router from 'next/router';
@@ -17,10 +18,11 @@ export default function Swoth({ Component, pageProps }) {
             <Head>
                 <link rel="preconnect" href="https://fonts.gstatic.com" />
                 <link rel="icon" href="/img/favicon.png" type="image/x-icon" />
+                <link href="https://pro.fontawesome.com/releases/v6.0.0-beta1/css/all.css" rel="stylesheet" />
                 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet" />
                 <link rel="stylesheet" href="/css/nprogress.css" />
             </Head>
-            <main className="max-w-screen-lg p-5 w-full md:py-10 md:w-10/12 lg:py-20 lg:w-8/12 mx-auto transition-all duration-300">
+            <main className="overflow-y-hidden md:overflow-y-visible min-h-[calc(100vh-14px)] max-w-screen-lg p-5 w-full md:py-10 md:w-10/12 lg:py-20 lg:w-8/12 mx-auto transition-all duration-300">
                 <Header />
                 <Component {...pageProps} />
                 <Footer />

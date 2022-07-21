@@ -10,31 +10,45 @@ export default function Repos() {
             repos.push(null);
         };
     };
-
+    
     return (
-        <div className="w-full pt-10 pb-5">
-            <h1 className="text-2xl text-white font-bold text-center">Github Repositories</h1>
+        <div className="w-full py-10">
+            <div className="relative w-full">
+                <div className="w-24 h-24 rounded-lg shadow-xl shadow-blue-800/20 bg-gradient-to-bl from-sky-600 to-blue-800" />
+                <h1 className="heading-text absolute bottom-5 left-5 text-3xl text-white font-bold text-center">GitHub Repositories</h1>
+            </div>
             {fetchedRepos ? <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {repos.map((__, index) => (
-                    __ ? <div key={index} className="project rounded-md hover:shadow-md p-3">
-                        <a className="rounded-md bg-gray-600 bg-opacity-10 border-2 border-gray-400 border-dashed p-5 w-full flex items-center justify-center">
-                            <div className="w-full">
-                                <h3 className="text-center font-bold text-sm">./{__.name}</h3>
-                                <div className="flex items-center justify-between">
-                                    <h6 className="flex items-center gap-x-1"><UilStar /> {__.stargazers_count} <span className="text-xs opacity-50">stars</span></h6>
-                                    <h6 className="flex items-center gap-x-1"><UilCodeBranch /> {__.forks_count} <span className="text-xs opacity-50">forks</span></h6>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                    : <div key={index} className="project rounded-md hover:shadow-md p-3">
-                        <a className="rounded-md bg-gray-600 bg-opacity-10 border-2 border-gray-400 border-dashed p-5 w-full flex items-center justify-center">
-                            <h3 className="font-bold">Blank</h3>
-                        </a>
+                    __ ? <a href={__.html_url} target="_blank" key={index} className="bg-[#080808] hover:bg-[#101010] transition-all duration-200 flex flex-col rounded-lg py-4 px-5 h-28">
+                        <h1 className="leading-none font-bold text-lg">{__.full_name}</h1>
+                        <span className="bg-white/10 text-sm w-min py-0.5 px-1 mt-2 block rounded-lg">{__.language || "Collaborator"}</span>
+                        <div className="w-full mt-auto flex-1 flex items-end justify-end space-x-3">
+                            <h6 className="flex items-center gap-x-1"><UilStar /> {__.stargazers_count} <span className="text-xs opacity-50">stars</span></h6>
+                            <h6 className="flex items-center gap-x-1"><UilCodeBranch /> {__.forks_count} <span className="text-xs opacity-50">forks</span></h6>
+                        </div>
+                    </a>
+                    : <div key={index} className="bg-[#080808] rounded-lg p-5 h-28">
+                        <div className="animate-pulse rounded-lg w-28 h-6 bg-white/10" />
+                        <div className="animate-pulse rounded-lg w-16 h-5 mt-2 mb-1 bg-white/10" />
+                        <div className="w-full mt-auto flex-1 flex items-end justify-end space-x-3">
+                            <div className="animate-pulse rounded-lg w-16 h-5 bg-white/10" />
+                            <div className="animate-pulse rounded-lg w-16 h-5 bg-white/10" />
+                        </div>
                     </div>
                 ))}
             </div>
-            : <UilSpinnerAlt className="w-12 h-12 mx-auto mt-5 spin" />}
+            : <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 6 }).map((_, index) => (
+                    <div key={index} className="bg-[#080808] rounded-lg p-5 h-28">
+                        <div className="animate-pulse rounded-lg w-28 h-6 bg-white/10" />
+                        <div className="animate-pulse rounded-lg w-16 h-5 mt-2 mb-1 bg-white/10" />
+                        <div className="w-full mt-auto flex-1 flex items-end justify-end space-x-3">
+                            <div className="animate-pulse rounded-lg w-16 h-5 bg-white/10" />
+                            <div className="animate-pulse rounded-lg w-16 h-5 bg-white/10" />
+                        </div>
+                    </div>
+                ))}
+            </div>}
         </div>
     );
 };

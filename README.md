@@ -1,8 +1,11 @@
 <div align="center">
-    <h1>swoth.xyz</h1>
-    <h5>Developed with 🖤 by <a href="https://swoth.xyz">Swôth</a></h5>
-    <img src="https://i.ibb.co/bd1CsmN/swoth-personal.png">
+    <h1>swoth.me @ 3.0.0</h1>
+    <h5>Developed with 💙 by <a href="https://swoth.me">Swôth</a></h5>
+    <img src="https://i.ibb.co/kHwrmpV/image.png">
 </div>
+
+# ⚙️ Config
+> Type your personal GitHub access token on line 7 in the /pages/api/util/repos.jsx file to list your repositories.
 
 # 📜 Usage
 > Install packages. \

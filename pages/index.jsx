@@ -10,8 +10,8 @@ export default function Index() {
             <Head>
                 <title>Home | Swôth</title>
             </Head>
-            <Activities />
             <Hero />
+            <Activities />
             <Repos />
             <Techs />
         </>
