@@ -1,0 +1,173 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+
+:root {
+    --body-bg-color: #000000;
+    --body-text-color: #D1D5DB;
+}
+
+html {
+    background: var(--body-bg-color);
+    color: var(--body-text-color);
+}
+
+html, body, #next {
+    height: 100%;
+    scroll-behavior: smooth;
+}
+
+main {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.version {
+    background-color: var(--version-bg-color);
+}
+
+.heading-text {
+    text-shadow: rgb(0, 0, 0) -2px 2px 0px, rgb(0, 0, 0) -4px 3px 0px;
+}
+
+.heading-text-small {
+    text-shadow: rgb(0, 0, 0) -2px 2px 0px, rgb(0, 0, 0) -1px 1px 0px;
+}
+
+.social {
+    background-color: var(--social-bg-color);
+}
+
+.project-box {
+    --box-bg: rgba(255, 255, 255, .06);
+    --box-shadow: rgba(255, 255, 255, .03);
+}
+
+.project-box.tone-1 {
+    --box-bg: rgba(185, 28, 28, .1);
+    --box-shadow: rgba(185, 28, 28, .15);
+}
+
+.project-box.tone-2 {
+    --box-bg: rgba(4, 120, 87, .1);
+    --box-shadow: rgba(4, 120, 87, .15);
+}
+
+.project-box.tone-3 {
+    --box-bg: rgba(29, 78, 216, .1);
+    --box-shadow: rgba(29, 78, 216, .15);
+}
+
+.project-box.perspective-right {
+    background-color: var(--box-bg);
+    box-shadow: 3px 3px 0 var(--box-shadow);
+}
+
+.project-box.perspective-left {
+    background-color: var(--box-bg);
+    box-shadow: -3px 3px 0 var(--box-shadow);
+}
+
+.project-box.perspective-middle {
+    background-color: var(--box-bg);
+    box-shadow: 3px 3px 0 var(--box-shadow);
+}
+
+.tech, .project {
+    background-color: var(--tech-bg-color);
+    transition: .2s;
+}
+
+.tech:hover {
+    transform: translateY(-3px);
+}
+
+.input {
+    background-color: var(--input-bg-color);
+    border: 1px solid rgba(255, 255, 255, .1);
+    transition: .2s;
+}
+
+.input:hover {
+    background-color: var(--input-hover-color);
+}
+
+svg {
+    width: 18px;
+    height: 18px;
+}
+
+svg.dropdown {
+    width: 30px !important;
+    height: 30px !important;
+    margin: 9px 0;
+}
+
+.spin {
+    animation-name: spin;
+    animation-duration: 1500ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@keyframes spin {
+    from {
+        transform:rotate(0deg);
+    }
+    to {
+        transform:rotate(360deg);
+    }
+}
+
+.discord-online {
+    background-color: #3ba55d;
+}
+
+.discord-idle {
+    background-color: #faa81a;
+}
+
+.discord-dnd {
+    background-color: #ed4245;
+}
+
+.discord-offline {
+    background-color: #747f8d;
+}
+
+.discord-text {
+    font-size: 10px;
+}
+
+.waving {
+    animation: waving 3s linear infinite;
+}
+
+@keyframes waving {
+    0% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(10px);
+    }
+    100% {
+        transform: translateY(0);
+    }
+}
+
+.perspective-left {
+  -webkit-perspective: 484px;
+  perspective: 484px;
+  transform: scale(1) perspective(1000px) rotateX(23deg) rotateY(23deg) rotate(-9.8deg) translateX(0);
+}
+
+.perspective-right {
+  -webkit-perspective: 484px;
+  perspective: 484px;
+  -webkit-transform: scale(1) perspective(1000px) rotateX(23deg) rotateY(-23deg) rotate(15deg) translateX(55px);
+  transform: scale(1) perspective(1000px) rotateX(23deg) rotateY(-23deg) rotate(15deg) translateX(55px);
+}
+
+.perspective-middle {
+  -webkit-perspective: 484px;
+  perspective: 484px;
+  -webkit-transform: scale(1) perspective(1000px) rotateX(13deg) rotateY(-33deg) rotate(5deg) translateX(55px);
+  transform: scale(1) perspective(1000px) rotateX(13deg) rotateY(-33deg) rotate(5deg) translateX(55px);
+}
