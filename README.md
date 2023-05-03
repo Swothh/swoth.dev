@@ -12,7 +12,7 @@
 
 # 📜 Usage
 > Install packages. \
-> $ `npm install`
+> $ `npm i --force`
 >
 > Start development server at ::3000 port. \
 > $ `npm run dev`
