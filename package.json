@@ -20,7 +20,7 @@
         "next": "^12.2.2",
         "next-iron-session": "^4.2.0",
         "nprogress": "^0.2.0",
-        "postcss": "^8.2.13",
+        "postcss": "^8.4.31",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-text-loop-next": "^0.0.3",
