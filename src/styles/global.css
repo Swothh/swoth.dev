@@ -1,0 +1,36 @@
+@import './nprogress.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, div#__next {
+    width: 100%;
+    min-height: 100vh;
+}
+
+body {
+    overflow-x: hidden;
+    background: #fafafa;
+    --nprogress-color: #020617;
+}
+
+body.dark {
+    background: #020617;
+    --nprogress-color: #fafafa;
+}
+
+.footer-gradient, .button-gradient {
+    background: rgb(110,195,244);
+    background: linear-gradient(60deg, rgba(110,195,244,1) 0%, rgba(239,0,143,1) 33%, rgba(255,186,39,1) 66%, rgba(112,56,255,1) 100%);
+}
+
+.mask-gradient {
+    background-image: var(--gradient);
+    background-size: cover;
+    pointer-events: none;
+    user-select: none;
+    background-position: top;
+    z-index: -1;
+    mask-image: linear-gradient(to top, transparent 10%, rgba(0, 0, 0, .1), rgba(0, 0, 0, .5));
+}
