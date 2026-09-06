@@ -1,0 +1,147 @@
+---
+import SectionLabel from './SectionLabel.astro';
+import { portfolio } from '../data/portfolio';
+import { getProjectHref } from '../lib/projects';
+
+const project = portfolio.featuredProject;
+const projectHref = getProjectHref(project);
+---
+
+<section id="projects" class="section-anchor pt-[38px]" aria-labelledby="featured-label">
+  <SectionLabel><span id="featured-label">Featured project</span></SectionLabel>
+  <a class="group relative flex min-h-[330px] flex-col overflow-hidden rounded-[var(--radius)] bg-[var(--surface)] px-7 pt-[26px] pb-7 transition-all duration-200 hover:scale-[1.01] hover:bg-[var(--surface-hover)] max-[600px]:min-h-[315px] max-[600px]:p-[22px]" href={projectHref} target="_blank" rel="noreferrer">
+    <div class="flex items-center justify-between">
+      <span class="text-[0.6875rem] tracking-[0.08em] text-[var(--faint)]">01</span>
+      <span class="flex items-center gap-3.5">
+        {project.repository && (
+          <span
+            class="repository-stats items-center gap-2.5 text-[0.6875rem] text-[var(--muted)] tabular-nums"
+            data-repository-stats
+            data-repository={project.repository}
+            aria-live="polite"
+            hidden
+          >
+            <span class="flex items-center gap-1" title="GitHub stars">
+              <svg class="h-3 w-3 overflow-visible fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.6]" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m12 2.7 2.83 5.73 6.32.92-4.57 4.46 1.08 6.3L12 17.13l-5.66 2.98 1.08-6.3-4.57-4.46 6.32-.92L12 2.7Z"></path>
+              </svg>
+              <span data-repository-stars></span>
+            </span>
+            <span class="flex items-center gap-1" title="GitHub forks">
+              <svg class="h-3 w-3 overflow-visible fill-none stroke-current [stroke-linecap:round] [stroke-linejoin:round] [stroke-width:1.6]" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="7" cy="5" r="2.25"></circle>
+                <circle cx="17" cy="5" r="2.25"></circle>
+                <circle cx="12" cy="19" r="2.25"></circle>
+                <path d="M7 7.25v2.2c0 1.5 1.2 2.7 2.7 2.7h4.6c1.5 0 2.7-1.2 2.7-2.7v-2.2M12 12.15v4.6"></path>
+              </svg>
+              <span data-repository-forks></span>
+            </span>
+          </span>
+        )}
+        <span class="grid h-[34px] w-[34px] place-items-center rounded-full bg-[var(--paper)] text-[0.8125rem] transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px" aria-hidden="true">↗</span>
+      </span>
+    </div>
+    <div class="z-[1] mt-auto">
+      <h2 class="m-0 text-[1.45rem] font-[650] tracking-[-0.04em]">{project.name}</h2>
+      <p class="mt-[5px] mb-[18px] text-[0.9375rem] text-[var(--muted)]">{project.description}</p>
+      <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0" aria-label="Technologies used">
+        {project.stack.map((item) => <li class="rounded-full bg-[var(--chip)] px-2 py-1 text-[0.6875rem] text-[var(--muted)]">{item}</li>)}
+      </ul>
+    </div>
+    <span class="daisy-marks" aria-hidden="true">
+      <span>✦</span>
+      <span>✶</span>
+      <span>✳</span>
+    </span>
+  </a>
+</section>
+
+<script>
+  type RepositoryStats = {
+    stars: number;
+    forks: number;
+    cachedAt: number;
+  };
+
+  const CACHE_MAX_AGE = 60 * 60 * 1_000;
+
+  function isRepositoryStats(value: unknown): value is RepositoryStats {
+    if (!value || typeof value !== 'object') return false;
+
+    const stats = value as Partial<RepositoryStats>;
+    return typeof stats.stars === 'number'
+      && typeof stats.forks === 'number'
+      && typeof stats.cachedAt === 'number';
+  }
+
+  function readCachedStats(key: string): RepositoryStats | null {
+    try {
+      const value = localStorage.getItem(key);
+      if (!value) return null;
+
+      const parsed: unknown = JSON.parse(value);
+      return isRepositoryStats(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function writeCachedStats(key: string, stats: RepositoryStats): void {
+    try {
+      localStorage.setItem(key, JSON.stringify(stats));
+    } catch {
+      // The live value still renders when storage is unavailable.
+    }
+  }
+
+  function renderStats(element: HTMLElement, stats: RepositoryStats): void {
+    const stars = element.querySelector<HTMLElement>('[data-repository-stars]');
+    const forks = element.querySelector<HTMLElement>('[data-repository-forks]');
+    if (!stars || !forks) return;
+
+    stars.textContent = stats.stars.toLocaleString('en-US');
+    forks.textContent = stats.forks.toLocaleString('en-US');
+    element.setAttribute('aria-label', `${stats.stars} GitHub stars and ${stats.forks} forks`);
+    element.hidden = false;
+  }
+
+  async function hydrateRepositoryStats(element: HTMLElement): Promise<void> {
+    const repository = element.dataset.repository;
+    if (!repository || !/^[\w.-]+\/[\w.-]+$/.test(repository)) return;
+
+    const cacheKey = `github-repository-stats:${repository.toLowerCase()}`;
+    const cached = readCachedStats(cacheKey);
+
+    if (cached) {
+      renderStats(element, cached);
+      if (Date.now() - cached.cachedAt < CACHE_MAX_AGE) return;
+    }
+
+    try {
+      const repositoryPath = repository.split('/').map(encodeURIComponent).join('/');
+      const response = await fetch(`https://api.github.com/repos/${repositoryPath}`);
+      if (!response.ok) return;
+
+      const data: unknown = await response.json();
+      if (!data || typeof data !== 'object') return;
+
+      const repositoryData = data as { stargazers_count?: unknown; forks_count?: unknown };
+      if (typeof repositoryData.stargazers_count !== 'number'
+        || typeof repositoryData.forks_count !== 'number') return;
+
+      const stats: RepositoryStats = {
+        stars: repositoryData.stargazers_count,
+        forks: repositoryData.forks_count,
+        cachedAt: Date.now(),
+      };
+
+      writeCachedStats(cacheKey, stats);
+      renderStats(element, stats);
+    } catch {
+      // A cached value remains visible; without one the stats stay hidden.
+    }
+  }
+
+  document.querySelectorAll<HTMLElement>('[data-repository-stats]')
+    .forEach((element) => void hydrateRepositoryStats(element));
+</script>

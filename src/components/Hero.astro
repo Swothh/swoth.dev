@@ -1,0 +1,22 @@
+---
+import Mark from './Mark.astro';
+import {portfolio} from '../data/portfolio';
+---
+
+<section id="overview" class="section-anchor min-h-[470px] max-[600px]:min-h-[445px]" aria-labelledby="intro-title">
+    <div class="grid grid-cols-[1fr_auto] items-center max-[600px]:grid-cols-1" data-hero-identity>
+        <Mark size="large" muted desktopOnly />
+            <a
+                    class="group max-[900px]:hidden rounded-full bg-[var(--surface)] px-3 py-[7px] text-xs text-[var(--muted)] transition-colors duration-200 hover:bg-[var(--surface-hover)] hover:text-[var(--ink)] max-[600px]:hidden"
+                    href={`mailto:${portfolio.profile.email}`}
+            >Say hello <span
+                    class="ml-[3px] inline-block transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px"
+                    aria-hidden="true">↗</span></a>
+    </div>
+
+    <div class="mt-28 max-w-[670px] max-[600px]:mt-[94px]">
+        <h1 id="intro-title"
+            class="m-0 mb-5 text-[clamp(2.75rem,5vw,3.35rem)] leading-[1.08] font-[520] tracking-[-0.055em] max-[600px]:text-[2.7rem]">{portfolio.profile.headline}</h1>
+        <p class="m-0 max-w-[590px] text-[clamp(1.5rem,3.1vw,2.05rem)] leading-[1.35] font-[480] tracking-[-0.04em] text-[var(--copy)] max-[600px]:text-[1.45rem] max-[600px]:leading-[1.42]">{portfolio.profile.bio}</p>
+    </div>
+</section>

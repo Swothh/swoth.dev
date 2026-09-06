@@ -1,0 +1,134 @@
+---
+import Mark from './Mark.astro';
+import { portfolio } from '../data/portfolio';
+
+const nav = [
+  { label: 'Overview', href: '#overview' },
+  { label: 'Projects', href: '#projects' },
+  { label: 'Background', href: '#background' },
+  { label: 'Contact', href: '#contact' },
+] as const;
+---
+
+<aside class="sidebar sidebar--hero-visible fixed inset-y-0 left-0 z-10 flex w-[236px] flex-col px-9 pt-[38px] pb-8 max-[900px]:hidden" aria-label="Site navigation" data-sidebar>
+  <a class="sidebar-identity ml-4 inline-flex w-fit items-center gap-3 transition-all duration-200" href="#overview" aria-label="Back to overview">
+    <Mark />
+  </a>
+
+  <nav class="sidebar-nav mt-[72px] flex flex-col gap-1.5 transition-[margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]" aria-label="Portfolio sections">
+    {nav.map((item, index) => (
+      <a href={item.href} class:list={['flex items-center gap-3 py-1.5 text-[0.8125rem] text-[var(--faint)] transition-colors duration-200', { active: index === 0 }]} data-nav-link>
+        <span class="nav-indicator h-1 w-1 scale-[0.4] rounded-full bg-current opacity-0 transition-all duration-200" aria-hidden="true"></span>
+        {item.label}
+      </a>
+    ))}
+  </nav>
+
+  <button class="theme-toggle mt-auto ml-4 grid h-[34px] w-[34px] cursor-pointer place-items-center rounded-full border-0 bg-[var(--surface)] p-0 text-[var(--muted)] transition-colors duration-200 hover:bg-[var(--surface-hover)] hover:text-[var(--ink)]" type="button" data-theme-toggle aria-label="Switch to dark theme">
+    <span class="relative block h-3.5 w-3.5" aria-hidden="true">
+      <svg class="theme-icon theme-icon--moon absolute inset-0 h-full w-full" viewBox="0 0 16 16" fill="none">
+        <path d="M12.9 10.15A5.55 5.55 0 0 1 5.85 3.1 5.35 5.35 0 1 0 12.9 10.15Z" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" />
+      </svg>
+      <svg class="theme-icon theme-icon--sun absolute inset-0 h-full w-full" viewBox="0 0 16 16" fill="none">
+        <circle cx="8" cy="8" r="2.6" stroke="currentColor" stroke-width="1.2" />
+        <path d="M8 1.25v1.5M8 13.25v1.5M14.75 8h-1.5M2.75 8h-1.5M12.77 3.23 11.7 4.3M4.3 11.7l-1.07 1.07M12.77 12.77 11.7 11.7M4.3 4.3 3.23 3.23" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+      </svg>
+    </span>
+  </button>
+</aside>
+
+<header class="mobile-header hidden max-[900px]:fixed max-[900px]:inset-x-0 max-[900px]:top-0 max-[900px]:z-20 max-[900px]:flex max-[900px]:h-[70px] max-[900px]:items-center max-[900px]:justify-between max-[900px]:bg-gradient-to-b max-[900px]:from-[var(--mobile-header)] max-[900px]:px-7 max-[600px]:px-5">
+  <a class="inline-flex w-fit items-center gap-3" href="#overview" aria-label="Back to overview">
+    <Mark />
+  </a>
+  <details class="mobile-menu relative">
+    <summary class="flex h-[34px] w-[34px] cursor-pointer list-none flex-col items-center justify-center gap-[5px] rounded-full bg-[var(--surface)]" aria-label="Open navigation">
+      <span class="menu-line h-px w-3 bg-[var(--ink)] transition-transform duration-200"></span><span class="menu-line h-px w-3 bg-[var(--ink)] transition-transform duration-200"></span>
+    </summary>
+    <nav class="absolute top-11 right-0 shadow-md flex w-[156px] flex-col gap-0.5 rounded-[14px] bg-[var(--surface)] p-2" aria-label="Mobile navigation">
+      {nav.map((item) => <a class="rounded-lg px-2.5 py-2 text-[0.8125rem] hover:bg-[var(--paper)]" href={item.href}>{item.label}</a>)}
+    </nav>
+  </details>
+</header>
+
+<script>
+  import { createShader, playSweep } from 'glimm';
+
+  const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+  let transitionRunning = false;
+
+  const getTheme = () => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
+
+  const applyTheme = (theme: 'light' | 'dark') => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem('swoth-theme', theme);
+    } catch {}
+    themeColor?.setAttribute('content', theme === 'dark' ? '#11110f' : '#f7f5f0');
+    themeToggle?.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  };
+
+  applyTheme(getTheme());
+
+  themeToggle?.addEventListener('click', () => {
+    if (transitionRunning) return;
+
+    const currentTheme = getTheme();
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      applyTheme(nextTheme);
+      return;
+    }
+
+    const canvas = document.createElement('canvas');
+    canvas.className = 'glimm-theme-canvas';
+    canvas.setAttribute('aria-hidden', 'true');
+    document.body.append(canvas);
+
+    const shader = createShader({
+      canvas,
+      direction: currentTheme === 'dark' ? 'rtl' : 'ltr',
+      bandTight: 12,
+      waveAmount: 0.3,
+      rippleAmount: 0.65,
+      swellAmount: 0.35,
+    });
+
+    if (!shader) {
+      canvas.remove();
+      applyTheme(nextTheme);
+      return;
+    }
+
+    transitionRunning = true;
+    themeToggle.disabled = true;
+
+    let cleanedUp = false;
+    const cleanup = () => {
+      if (cleanedUp) return;
+      cleanedUp = true;
+      shader.destroy();
+      canvas.remove();
+      transitionRunning = false;
+      themeToggle.disabled = false;
+      themeToggle.focus({ preventScroll: true });
+    };
+
+    const sweep = playSweep(shader, {
+      palette: 'azure',
+      direction: currentTheme === 'dark' ? 'rtl' : 'ltr',
+      easing: 'ease',
+      sweepMs: 760,
+      outroMs: 420,
+      midpoint: 0.5,
+      peakAlpha: 0.9,
+      brightness: currentTheme === 'dark' ? 0.82 : 1,
+      onMidpoint: () => applyTheme(nextTheme),
+      onComplete: cleanup,
+    });
+
+    void sweep.done.finally(cleanup);
+  });
+</script>

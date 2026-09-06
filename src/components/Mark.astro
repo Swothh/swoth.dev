@@ -1,0 +1,19 @@
+---
+type Props = {
+    size?: 'small' | 'large';
+    muted?: boolean;
+    desktopOnly?: boolean;
+};
+
+const { size = 'small', muted = false, desktopOnly = false } = Astro.props;
+---
+
+<span
+    class:list={[
+        'mark block shrink-0',
+        size === 'large' ? 'h-10 w-[50px]' : 'h-[31px] w-[38px]',
+        { 'mark--muted': muted },
+        desktopOnly ? 'max-[900px]:hidden' : ''
+    ]}
+    aria-hidden="true"
+/>

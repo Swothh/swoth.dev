@@ -1,0 +1,17 @@
+---
+import SectionLabel from './SectionLabel.astro';
+import { portfolio } from '../data/portfolio';
+---
+
+<section id="background" class="section-anchor pt-[116px] max-[600px]:pt-[88px]" aria-labelledby="background-label">
+  <SectionLabel><span id="background-label">Background</span></SectionLabel>
+  <ol class="timeline m-0 list-none p-0">
+    {portfolio.background.map((entry) => (
+      <li class="relative grid min-h-[92px] grid-cols-[48px_24px_1fr]">
+        <time class="pt-[3px] text-xs text-[var(--muted)]">{entry.year}</time>
+        <span class="timeline-marker z-[1] mt-[9px] h-[7px] w-[7px] rounded-full bg-[var(--paper)] shadow-[inset_0_0_0_1px_var(--faint)]" aria-hidden="true"></span>
+        <p class="m-0 text-[0.9375rem] text-[var(--copy)]">{entry.description}</p>
+      </li>
+    ))}
+  </ol>
+</section>

@@ -1,0 +1,86 @@
+---
+import '@fontsource-variable/manrope';
+import '../styles/global.css';
+import { portfolio } from '../data/portfolio';
+
+type Props = {
+  title: string;
+  description: string;
+};
+
+const { title, description } = Astro.props;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? portfolio.seo.siteUrl);
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': portfolio.seo.siteUrl + '/#website',
+      url: portfolio.seo.siteUrl,
+      name: portfolio.profile.name,
+      description,
+      inLanguage: portfolio.seo.language,
+    },
+    {
+      '@type': 'Person',
+      '@id': portfolio.seo.siteUrl + '/#person',
+      name: portfolio.seo.author,
+      alternateName: portfolio.profile.handle,
+      url: portfolio.seo.siteUrl,
+      email: 'mailto:' + portfolio.profile.email,
+      jobTitle: portfolio.profile.descriptor,
+      sameAs: portfolio.links.map((link) => link.href),
+      knowsAbout: portfolio.technologies.flatMap((group) => group.items),
+    },
+  ],
+};
+---
+
+<!doctype html>
+<html lang={portfolio.seo.language}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content={description} />
+    <meta name="author" content={portfolio.seo.author} />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="theme-color" content="#f7f5f0" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={portfolio.profile.name} />
+    <meta property="og:locale" content={portfolio.seo.locale} />
+
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:creator" content={portfolio.seo.socialHandle} />
+    <script is:inline>
+      (() => {
+        let storedTheme = null;
+        try {
+          storedTheme = localStorage.getItem('swoth-theme');
+        } catch {}
+        const theme = storedTheme === 'light' || storedTheme === 'dark'
+          ? storedTheme
+          : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+        document.documentElement.dataset.theme = theme;
+        document.querySelector('meta[name="theme-color"]')?.setAttribute(
+          'content',
+          theme === 'dark' ? '#11110f' : '#f7f5f0',
+        );
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

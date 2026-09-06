@@ -1,0 +1,22 @@
+---
+import SectionLabel from './SectionLabel.astro';
+import { portfolio } from '../data/portfolio';
+import { getProjectHref } from '../lib/projects';
+---
+
+<section class="pt-[116px] max-[600px]:pt-[88px]" aria-labelledby="selected-label">
+  <SectionLabel><span id="selected-label">Selected work</span></SectionLabel>
+  <div class="border-t border-[var(--line)]">
+    {portfolio.projects.map((project, index) => (
+      <a class="group grid min-h-[102px] grid-cols-[32px_1fr_auto_18px] items-center gap-3.5 border-b border-[var(--line)] transition-[padding] duration-200 hover:px-2 max-[600px]:min-h-[104px] max-[600px]:grid-cols-[26px_1fr_16px]" href={getProjectHref(project)} target="_blank" rel="noreferrer">
+        <span class="text-[0.6875rem] tracking-[0.08em] text-[var(--faint)]">0{index + 2}</span>
+        <span class="flex flex-col gap-[3px]">
+          <strong class="text-base font-[650] tracking-[-0.025em]">{project.name}</strong>
+          <small class="text-[0.8125rem] text-[var(--muted)]">{project.description}</small>
+        </span>
+        <span class="text-[0.6875rem] whitespace-nowrap text-[var(--faint)] max-[600px]:hidden">{project.stack.join(' · ')}</span>
+        <span class="text-xs text-[var(--muted)] transition-all duration-200 group-hover:translate-x-px group-hover:-translate-y-px group-hover:text-[var(--accent)]" aria-hidden="true">↗</span>
+      </a>
+    ))}
+  </div>
+</section>

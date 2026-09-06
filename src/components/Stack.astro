@@ -1,0 +1,16 @@
+---
+import SectionLabel from './SectionLabel.astro';
+import { portfolio } from '../data/portfolio';
+---
+
+<section class="pt-[116px] max-[600px]:pt-[88px]" aria-labelledby="stack-label">
+  <SectionLabel><span id="stack-label">Technologies</span></SectionLabel>
+  <ul class="m-0 list-none rounded-[18px] bg-[var(--surface)] px-7 py-[13px] max-[600px]:px-5 max-[600px]:py-3">
+    {portfolio.technologies.map((group) => (
+      <li class="technology-row grid grid-cols-[84px_1fr] items-baseline gap-[18px] max-[600px]:grid-cols-[68px_1fr] max-[600px]:gap-3.5">
+        <span class="py-3.5 text-right text-[0.6875rem] leading-[1.8] font-normal tracking-[0.12em] text-[var(--faint)] uppercase">{group.category}</span>
+        <span class="technology-items py-3.5 text-[0.9375rem] leading-[1.8] tracking-[-0.02em] text-[var(--copy)]">{group.items.join(' · ')}</span>
+      </li>
+    ))}
+  </ul>
+</section>

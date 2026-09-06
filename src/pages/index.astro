@@ -1,0 +1,102 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Hero from '../components/Hero.astro';
+import FeaturedProject from '../components/FeaturedProject.astro';
+import ProjectList from '../components/ProjectList.astro';
+import Background from '../components/Background.astro';
+import Stack from '../components/Stack.astro';
+import Contact from '../components/Contact.astro';
+import { portfolio } from '../data/portfolio';
+---
+
+<BaseLayout title={`${portfolio.profile.name} — ${portfolio.profile.descriptor}`} description={portfolio.profile.bio}>
+  <Sidebar />
+  <main class="mx-auto w-[min(720px,calc(100%-300px))] pt-[108px] max-[900px]:w-[min(720px,calc(100%-56px))] max-[900px]:pt-[116px] max-[600px]:w-[calc(100%-40px)] max-[600px]:pt-[100px]">
+    <Hero />
+    <FeaturedProject />
+    <ProjectList />
+    <Background />
+    <Stack />
+    <Contact />
+    <footer class="overflow-hidden border-t border-[var(--line)] pt-6 text-[0.6875rem] text-[var(--faint)]">
+      <div class="flex justify-between">
+        <span>© {new Date().getFullYear()}, {portfolio.profile.name}</span>
+        <span class="inline-flex items-center gap-1.5">
+          {portfolio.footer.buildLabel}
+          <span class="inline-flex items-center" aria-label="Astro">
+            <img class="theme-sensitive-logo h-3.5 w-auto opacity-70" src="/astro-icon.svg" alt="Astro" width="11" height="14" />
+          </span>
+          {portfolio.footer.locationPrefix} {portfolio.footer.location}
+        </span>
+      </div>
+      <div class="footer-wordmark mt-[54px] flex h-[0.52em] w-full items-start justify-between overflow-hidden text-[clamp(6rem,18vw,12rem)] leading-[0.74] font-[800] text-[var(--surface)] select-none" aria-hidden="true">
+        <span>S</span><span>W</span><span>O</span><span>T</span><span>H</span>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    const links = [...document.querySelectorAll('[data-nav-link]')];
+    const contactHref = '#contact';
+    let observedHref = '#overview';
+
+    const setActiveLink = (href: string) => {
+      links.forEach((link) => {
+        link.classList.toggle('active', link.getAttribute('href') === href);
+      });
+    };
+
+    const isAtPageEnd = () => (
+      Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 2
+    );
+
+    const syncActiveLink = () => {
+      setActiveLink(isAtPageEnd() ? contactHref : observedHref);
+    };
+
+    const sections = links
+      .map((link) => document.querySelector(link.getAttribute('href') ?? ''))
+      .filter((section): section is Element => Boolean(section));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (!visible) return;
+        observedHref = `#${visible.target.id}`;
+        syncActiveLink();
+      },
+      { rootMargin: '-20% 0px -65% 0px', threshold: [0, 0.2, 0.5] },
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    window.addEventListener('scroll', syncActiveLink, { passive: true });
+    window.addEventListener('resize', syncActiveLink);
+    syncActiveLink();
+
+    const sidebar = document.querySelector('[data-sidebar]');
+    const heroIdentity = document.querySelector('[data-hero-identity]');
+
+    if (sidebar && heroIdentity) {
+      const setSidebarIdentity = (heroIsVisible: boolean) => {
+        sidebar.classList.toggle('sidebar--hero-visible', heroIsVisible);
+      };
+
+      const heroBounds = heroIdentity.getBoundingClientRect();
+      setSidebarIdentity(heroBounds.bottom > 0 && heroBounds.top < window.innerHeight);
+
+      const identityObserver = new IntersectionObserver(
+        ([entry]) => setSidebarIdentity(entry.isIntersecting),
+        { threshold: 0 },
+      );
+
+      identityObserver.observe(heroIdentity);
+    }
+
+    document.querySelectorAll('.mobile-menu a').forEach((link) => {
+      link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'));
+    });
+  </script>
+</BaseLayout>

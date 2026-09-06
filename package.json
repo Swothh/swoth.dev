@@ -1,0 +1,21 @@
+{
+    "name": "swoth-portfolio",
+    "type": "module",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "astro dev",
+        "build": "astro check && astro build",
+        "preview": "astro preview"
+    },
+    "dependencies": {
+        "@astrojs/check": "^0.9.4",
+        "@astrojs/sitemap": "^3.7.4",
+        "@fontsource-variable/manrope": "^5.2.6",
+        "@tailwindcss/vite": "^4.1.13",
+        "astro": "^5.13.5",
+        "glimm": "^0.3.0",
+        "tailwindcss": "^4.1.13",
+        "typescript": "^5.9.2"
+    }
+}
