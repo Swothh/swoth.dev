@@ -22,12 +22,13 @@ import { portfolio } from '../data/portfolio';
     <footer class="overflow-hidden border-t border-[var(--line)] pt-6 text-[0.6875rem] text-[var(--faint)]">
       <div class="flex justify-between">
         <span>© {new Date().getFullYear()}, {portfolio.profile.name}</span>
-        <span class="inline-flex items-center gap-1.5">
+        <span class="inline-flex items-center gap-[0.15rem]">
           {portfolio.footer.buildLabel}
-          <span class="inline-flex items-center" aria-label="Astro">
+          <span class="inline-flex mx-[0.2rem] items-center" aria-label="Astro">
             <img class="theme-sensitive-logo h-3.5 w-auto opacity-70" src="/astro-icon.svg" alt="Astro" width="11" height="14" />
           </span>
-          {portfolio.footer.locationPrefix} {portfolio.footer.location}
+          {portfolio.footer.locationPrefix}{' '}
+          <a class="transition-colors hover:!underline hover:text-[var(--ink)]" href={`https://en.wikipedia.org/wiki/${portfolio.footer.location}`} target="_blank" rel="noreferrer">{portfolio.footer.location}</a>
         </span>
       </div>
       <div class="footer-wordmark mt-[54px] flex h-[0.52em] w-full items-start justify-between overflow-hidden text-[clamp(6rem,18vw,12rem)] leading-[0.74] font-[800] text-[var(--surface)] select-none" aria-hidden="true">
