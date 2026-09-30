@@ -67,7 +67,7 @@ const structuredData = {
         } catch {}
         const theme = storedTheme === 'light' || storedTheme === 'dark'
           ? storedTheme
-          : window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          : 'light';
 
         document.documentElement.dataset.theme = theme;
         document.querySelector('meta[name="theme-color"]')?.setAttribute(
