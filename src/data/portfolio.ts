@@ -7,12 +7,16 @@ type ProjectDetails = {
   name: string;
   description: string;
   stack: readonly string[];
+  font?: string;
+  size?: string;
+  spacing?: string;
+  weight?: string | number;
 };
 
-export type Project = ProjectDetails & (
-  | { href: string; repository?: string }
-  | { href?: string; repository: string }
-);
+export type Project = ProjectDetails & {
+  href?: string;
+  repository?: string;
+};
 
 export type TimelineEntry = {
   year: string;
@@ -25,6 +29,7 @@ export type TechnologyGroup = {
 };
 
 export type Portfolio = {
+  version: string;
   profile: {
     name: string;
     handle: string;
@@ -55,7 +60,8 @@ export type Portfolio = {
   };
 };
 
-export const portfolio = {
+export const portfolio: Portfolio = {
+  version: '7.1',
   profile: {
     name: 'swoth.dev',
     handle: '@swothh',
@@ -65,11 +71,13 @@ export const portfolio = {
     email: 'me@swoth.dev',
   },
   featuredProject: {
-    name: 'Riddleo',
+    name: 'riddleo',
     description: 'a daily riddle that\'s smarter than you think 🧩',
     stack: ['TypeScript', 'Next.js', 'Tailwind', 'shadcn/ui'],
     href: 'https://www.riddleo.com',
-    repository: '',
+    font: "'Gochi Hand', cursive",
+    spacing: "0em",
+    weight: 400,
   },
   projects: [
     {
@@ -84,6 +92,8 @@ export const portfolio = {
       description: 'write it raw, read beautifully 📖',
       stack: ['TypeScript', 'Bun', 'Next.js', 'Tailwind'],
       href: 'https://taleon.swoth.dev',
+      font: "'Newsreader', serif",
+      spacing: "0em",
     },
   ],
   background: [
@@ -141,4 +151,4 @@ export const portfolio = {
     locale: 'en_US',
     socialHandle: '@Swoth_',
   },
-} as const satisfies Portfolio;
+};

@@ -5,11 +5,18 @@ import { getProjectHref } from '../lib/projects';
 
 const project = portfolio.featuredProject;
 const projectHref = getProjectHref(project);
+const Tag = projectHref ? 'a' : 'div';
 ---
 
 <section id="projects" class="section-anchor pt-[38px]" aria-labelledby="featured-label">
   <SectionLabel><span id="featured-label">Featured project</span></SectionLabel>
-  <a class="group relative flex min-h-[330px] flex-col overflow-hidden rounded-[var(--radius)] bg-[var(--surface)] px-7 pt-[26px] pb-7 transition-all duration-200 hover:scale-[1.01] hover:bg-[var(--surface-hover)] max-[600px]:min-h-[315px] max-[600px]:p-[22px]" href={projectHref} target="_blank" rel="noreferrer">
+  <Tag
+    class:list={[
+      'group relative flex min-h-[330px] flex-col overflow-hidden rounded-[var(--radius)] bg-[var(--surface)] px-7 pt-[26px] pb-7 transition-all duration-200 max-[600px]:min-h-[315px] max-[600px]:p-[22px]',
+      projectHref && 'hover:scale-[1.01] hover:bg-[var(--surface-hover)]',
+    ]}
+    {...(projectHref ? { href: projectHref, target: '_blank', rel: 'noreferrer' } : {})}
+  >
     <div class="flex items-center justify-between">
       <span class="text-[0.6875rem] tracking-[0.08em] text-[var(--faint)]">01</span>
       <span class="flex items-center gap-3.5">
@@ -38,11 +45,13 @@ const projectHref = getProjectHref(project);
             </span>
           </span>
         )}
-        <span class="grid h-[34px] w-[34px] place-items-center rounded-full bg-[var(--paper)] text-[0.8125rem] transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px" aria-hidden="true">↗</span>
+        {projectHref && (
+          <span class="grid h-[34px] w-[34px] place-items-center rounded-full bg-[var(--paper)] text-[0.8125rem] transition-transform duration-200 group-hover:translate-x-px group-hover:-translate-y-px" aria-hidden="true">↗</span>
+        )}
       </span>
     </div>
     <div class="z-[1] mt-auto">
-      <h2 class="m-0 text-[1.45rem] font-[650] tracking-[-0.04em]">{project.name}</h2>
+      <h2 class="m-0 text-[1.45rem] font-[650] tracking-[-0.04em]" style={{ fontFamily: project.font, fontSize: project.size, letterSpacing: project.spacing, fontWeight: project.weight }}>{project.name}</h2>
       <p class="mt-[5px] mb-[18px] text-[0.9375rem] text-[var(--muted)]">{project.description}</p>
       <ul class="m-0 flex list-none flex-wrap gap-1.5 p-0" aria-label="Technologies used">
         {project.stack.map((item) => <li class="rounded-full bg-[var(--chip)] px-2 py-1 text-[0.6875rem] text-[var(--muted)]">{item}</li>)}
@@ -53,7 +62,7 @@ const projectHref = getProjectHref(project);
       <span>✶</span>
       <span>✳</span>
     </span>
-  </a>
+  </Tag>
 </section>
 
 <script>
@@ -103,6 +112,7 @@ const projectHref = getProjectHref(project);
     forks.textContent = stats.forks.toLocaleString('en-US');
     element.setAttribute('aria-label', `${stats.stars} GitHub stars and ${stats.forks} forks`);
     element.hidden = false;
+    element.style.display = 'flex';
   }
 
   async function hydrateRepositoryStats(element: HTMLElement): Promise<void> {
