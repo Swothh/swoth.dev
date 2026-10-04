@@ -65,13 +65,19 @@ export const portfolio = {
     email: 'me@swoth.dev',
   },
   featuredProject: {
-    name: 'swoth.dev',
-    description: 'a portfolio that speaks for me 🔧',
-    stack: ['TypeScript', 'Astro', 'Tailwind'],
-    href: 'https://github.com/Swothh/swoth.dev',
-    repository: 'Swothh/swoth.dev',
+    name: 'Riddleo',
+    description: 'a daily riddle that\'s smarter than you think 🧩',
+    stack: ['TypeScript', 'Next.js', 'Tailwind', 'shadcn/ui'],
+    href: 'https://www.riddleo.com',
   },
   projects: [
+    {
+      name: 'swoth.dev',
+      description: 'a portfolio that speaks for me 🔧',
+      stack: ['TypeScript', 'Astro', 'Tailwind'],
+      href: 'https://github.com/Swothh/swoth.dev',
+      repository: 'Swothh/swoth.dev',
+    },
     {
       name: 'Taleon',
       description: 'write it raw, read beautifully 📖',
