@@ -69,6 +69,7 @@ export const portfolio = {
     description: 'a daily riddle that\'s smarter than you think 🧩',
     stack: ['TypeScript', 'Next.js', 'Tailwind', 'shadcn/ui'],
     href: 'https://www.riddleo.com',
+    repository: '',
   },
   projects: [
     {
