@@ -278,6 +278,104 @@ a {
   mask-image: linear-gradient(to bottom, #000 8%, rgba(0, 0, 0, 0.72) 42%, transparent 100%);
 }
 
+.prose-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  font-size: 1rem;
+  line-height: 1.78;
+  color: var(--copy);
+}
+
+.prose-content p {
+  margin: 0;
+}
+
+.prose-content h2 {
+  margin: 1.35rem 0 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 640;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+}
+
+.prose-content h3 {
+  margin: 1rem 0 0;
+  font-size: 1.0625rem;
+  line-height: 1.35;
+  font-weight: 620;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+}
+
+.prose-content strong {
+  font-weight: 630;
+  color: var(--ink);
+}
+
+.prose-content a {
+  border-bottom: 1px solid var(--contact-line);
+  padding-bottom: 1px;
+  color: var(--ink);
+  transition: color 200ms ease, border-color 200ms ease;
+}
+
+.prose-content a:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.prose-content ul,
+.prose-content ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.prose-content li::marker {
+  color: var(--faint);
+}
+
+.prose-content blockquote {
+  margin: 0.35rem 0;
+  border-radius: 18px;
+  background: var(--surface);
+  padding: 1.25rem 1.5rem;
+  font-size: 1.02rem;
+  line-height: 1.65;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+
+.prose-content :not(pre) > code {
+  border-radius: 6px;
+  background: var(--surface);
+  padding: 0.15rem 0.4rem;
+  font-size: 0.84375rem;
+  color: var(--ink);
+}
+
+.prose-content pre {
+  margin: 0.35rem 0;
+  overflow-x: auto;
+  border-radius: 18px;
+  background: var(--surface) !important;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--ink);
+}
+
+.prose-content hr {
+  margin: 1rem 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 4px;

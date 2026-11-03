@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import { portfolio } from '../../data/portfolio';
+import { formatPostFullDate, getPostHref, getSortedPosts, type BlogEntry } from '../../lib/posts';
+
+export function getStaticPaths() {
+  const posts = getSortedPosts().filter((post) => !post.data.href);
+
+  return posts.map((post, index) => ({
+    params: { slug: post.id },
+    props: {
+      post,
+      previousPost: posts[index + 1] ?? null,
+      nextPost: posts[index - 1] ?? null,
+    },
+  }));
+}
+
+type Props = {
+  post: BlogEntry;
+  previousPost: BlogEntry | null;
+  nextPost: BlogEntry | null;
+};
+
+const { post, previousPost, nextPost } = Astro.props;
+const { Content } = post;
+---
+
+<BaseLayout title={`${post.data.title} — ${portfolio.profile.name}`} description={post.data.summary}>
+  <Sidebar activeSection="blog" isHome={false} />
+  <main class="mx-auto w-[min(720px,calc(100%-300px))] pt-[108px] max-[900px]:w-[min(720px,calc(100%-56px))] max-[900px]:pt-[116px] max-[600px]:w-[calc(100%-40px)] max-[600px]:pt-[100px]">
+    <article class="pb-[96px] max-[600px]:pb-[72px]" aria-labelledby="post-title">
+      <div class="mb-10 flex items-center justify-between gap-4">
+        <a
+          href="/#blog"
+          class="group inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3 py-[7px] text-xs text-[var(--muted)] transition-colors duration-200 hover:bg-[var(--surface-hover)] hover:text-[var(--ink)]"
+        >
+          <span
+            class="inline-block transition-transform duration-200 group-hover:-translate-x-0.5"
+            aria-hidden="true"
+          >←</span>
+          Back to writing
+        </a>
+
+        <div class="flex items-center gap-2 text-[0.75rem] text-[var(--faint)] tabular-nums">
+          <time datetime={post.data.publishedAt}>{formatPostFullDate(post.data.publishedAt)}</time>
+          <span aria-hidden="true">·</span>
+          <span>{post.data.readingTime}</span>
+        </div>
+      </div>
+
+      <header class="border-b border-[var(--line)] pb-8">
+        <h1
+          id="post-title"
+          class="m-0 text-[clamp(1.95rem,4vw,2.65rem)] leading-[1.14] font-[580] tracking-[-0.045em] text-[var(--ink)]"
+        >
+          {post.data.title}
+        </h1>
+        <p class="m-0 mt-4 text-[1.125rem] leading-[1.55] text-[var(--muted)]">
+          {post.data.summary}
+        </p>
+        {post.data.tags.length > 0 && (
+          <ul role="list" class="m-0 mt-5 flex list-none flex-wrap gap-1.5 p-0" aria-label="Article tags">
+            {post.data.tags.map((tag) => (
+              <li class="rounded-full bg-[var(--surface)] px-2.5 py-1 text-[0.6875rem] text-[var(--muted)]">
+                {tag}
+              </li>
+            ))}
+          </ul>
+        )}
+      </header>
+
+      <div class="prose-content mt-9">
+        <Content />
+      </div>
+
+      {(previousPost || nextPost) && (
+        <nav
+          class="mt-14 grid grid-cols-2 gap-3 border-t border-[var(--line)] pt-8 max-[600px]:grid-cols-1"
+          aria-label="Adjacent articles"
+        >
+          {previousPost ? (
+            <a
+              href={getPostHref(previousPost)}
+              class="group flex flex-col gap-1 rounded-[18px] bg-[var(--surface)] px-5 py-4 transition-colors duration-200 hover:bg-[var(--surface-hover)]"
+            >
+              <span class="text-[0.6875rem] tracking-[0.12em] text-[var(--faint)] uppercase">
+                ← Older
+              </span>
+              <span class="text-[0.9375rem] font-[620] tracking-[-0.02em] text-[var(--ink)] group-hover:text-[var(--accent)]">
+                {previousPost.data.title}
+              </span>
+            </a>
+          ) : (
+            <div class="max-[600px]:hidden"></div>
+          )}
+
+          {nextPost && (
+            <a
+              href={getPostHref(nextPost)}
+              class="group flex flex-col items-end gap-1 rounded-[18px] bg-[var(--surface)] px-5 py-4 text-right transition-colors duration-200 hover:bg-[var(--surface-hover)] max-[600px]:items-start max-[600px]:text-left"
+            >
+              <span class="text-[0.6875rem] tracking-[0.12em] text-[var(--faint)] uppercase">
+                Newer →
+              </span>
+              <span class="text-[0.9375rem] font-[620] tracking-[-0.02em] text-[var(--ink)] group-hover:text-[var(--accent)]">
+                {nextPost.data.title}
+              </span>
+            </a>
+          )}
+        </nav>
+      )}
+    </article>
+
+    <footer class="overflow-hidden border-t border-[var(--line)] pt-6 text-[0.6875rem] text-[var(--faint)]">
+      <div class="flex justify-between">
+        <span>© {new Date().getFullYear()}, {portfolio.profile.name}</span>
+        <span class="inline-flex items-center gap-[0.15rem]">
+          {portfolio.footer.buildLabel}
+          <span class="inline-flex mx-[0.2rem] items-center" aria-label="Astro">
+            <img class="theme-sensitive-logo h-3.5 w-auto opacity-70" src="/astro-icon.svg" alt="Astro" width="11" height="14" loading="lazy" />
+          </span>
+          {portfolio.footer.locationPrefix}{' '}
+          <a class="transition-colors hover:!underline hover:text-[var(--ink)]" href={`https://en.wikipedia.org/wiki/${portfolio.footer.location}`} target="_blank" rel="noreferrer">{portfolio.footer.location}</a>
+        </span>
+      </div>
+      <div class="footer-wordmark mt-[54px] flex h-[0.52em] w-full items-start justify-between overflow-hidden text-[clamp(6rem,18vw,12rem)] leading-[0.74] font-[800] text-[var(--surface)] select-none" aria-hidden="true">
+        <span>S</span><span>W</span><span>O</span><span>T</span><span>H</span>
+      </div>
+    </footer>
+  </main>
+</BaseLayout>

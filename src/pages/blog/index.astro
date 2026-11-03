@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Sidebar from '../../components/Sidebar.astro';
+import SectionLabel from '../../components/SectionLabel.astro';
+import { portfolio } from '../../data/portfolio';
+import { formatPostShortDate, getPostHref, getSortedPosts, isExternalPost } from '../../lib/posts';
+
+const posts = getSortedPosts();
+---
+
+<BaseLayout
+  title={`Writing — ${portfolio.profile.name}`}
+  description="Notes, essays, and technical write-ups on building software for the web."
+>
+  <Sidebar activeSection="blog" isHome={false} />
+  <main class="mx-auto w-[min(720px,calc(100%-300px))] pt-[108px] max-[900px]:w-[min(720px,calc(100%-56px))] max-[900px]:pt-[116px] max-[600px]:w-[calc(100%-40px)] max-[600px]:pt-[100px]">
+    <section class="pb-[96px] max-[600px]:pb-[72px]" aria-labelledby="writing-page-title">
+      <a
+        href="/#blog"
+        class="group mb-10 inline-flex items-center gap-1.5 rounded-full bg-[var(--surface)] px-3 py-[7px] text-xs text-[var(--muted)] transition-colors duration-200 hover:bg-[var(--surface-hover)] hover:text-[var(--ink)]"
+      >
+        <span
+          class="inline-block transition-transform duration-200 group-hover:-translate-x-0.5"
+          aria-hidden="true"
+        >←</span>
+        Back to overview
+      </a>
+
+      <SectionLabel><span>Writing</span></SectionLabel>
+      <h1
+        id="writing-page-title"
+        class="m-0 mb-4 text-[clamp(2.1rem,4vw,2.75rem)] leading-[1.12] font-[540] tracking-[-0.05em]"
+      >
+        Notes on software &amp; craft.
+      </h1>
+      <p class="m-0 mb-12 max-w-[540px] text-[1.0625rem] leading-[1.55] text-[var(--copy)]">
+        Occasional essays on interface design, web architecture, and lessons from building small products.
+      </p>
+
+      <div class="border-t border-[var(--line)]">
+        {posts.map((post, index) => {
+          const href = getPostHref(post);
+          const external = isExternalPost(post);
+
+          return (
+            <a
+              href={href}
+              {...(external ? { target: '_blank', rel: 'noreferrer' } : {})}
+              class="group grid min-h-[102px] grid-cols-[32px_1fr_auto_18px] items-center gap-3.5 border-b border-[var(--line)] transition-[padding] duration-200 hover:px-2 max-[600px]:min-h-[104px] max-[600px]:grid-cols-[26px_1fr_16px]"
+            >
+              <span class="text-[0.6875rem] tracking-[0.08em] text-[var(--faint)]">0{index + 1}</span>
+              <span class="flex flex-col gap-[3px]">
+                <span class="flex items-center gap-3">
+                  <strong class="text-base font-[650] tracking-[-0.025em]">{post.data.title}</strong>
+                </span>
+                <small class="text-[0.8125rem] text-[var(--muted)]">{post.data.summary}</small>
+              </span>
+              <span class="text-[0.6875rem] whitespace-nowrap text-[var(--faint)] tabular-nums max-[600px]:hidden">
+                <time datetime={post.data.publishedAt}>{formatPostShortDate(post.data.publishedAt)}</time> · {post.data.readingTime}
+              </span>
+              <span
+                class="text-xs text-[var(--muted)] transition-all duration-200 group-hover:translate-x-px group-hover:-translate-y-px group-hover:text-[var(--accent)]"
+                aria-hidden="true"
+              >↗</span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    <footer class="overflow-hidden border-t border-[var(--line)] pt-6 text-[0.6875rem] text-[var(--faint)]">
+      <div class="flex justify-between">
+        <span>© {new Date().getFullYear()}, {portfolio.profile.name}</span>
+        <span class="inline-flex items-center gap-[0.15rem]">
+          {portfolio.footer.buildLabel}
+          <span class="inline-flex mx-[0.2rem] items-center" aria-label="Astro">
+            <img class="theme-sensitive-logo h-3.5 w-auto opacity-70" src="/astro-icon.svg" alt="Astro" width="11" height="14" loading="lazy" />
+          </span>
+          {portfolio.footer.locationPrefix}{' '}
+          <a class="transition-colors hover:!underline hover:text-[var(--ink)]" href={`https://en.wikipedia.org/wiki/${portfolio.footer.location}`} target="_blank" rel="noreferrer">{portfolio.footer.location}</a>
+        </span>
+      </div>
+      <div class="footer-wordmark mt-[54px] flex h-[0.52em] w-full items-start justify-between overflow-hidden text-[clamp(6rem,18vw,12rem)] leading-[0.74] font-[800] text-[var(--surface)] select-none" aria-hidden="true">
+        <span>S</span><span>W</span><span>O</span><span>T</span><span>H</span>
+      </div>
+    </footer>
+  </main>
+</BaseLayout>

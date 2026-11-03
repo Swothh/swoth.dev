@@ -152,6 +152,8 @@ const Tag = projectHref ? 'a' : 'div';
     }
   }
 
-  document.querySelectorAll<HTMLElement>('[data-repository-stats]')
-    .forEach((element) => void hydrateRepositoryStats(element));
+  document.addEventListener('astro:page-load', () => {
+    document.querySelectorAll<HTMLElement>('[data-repository-stats]')
+      .forEach((element) => void hydrateRepositoryStats(element));
+  });
 </script>

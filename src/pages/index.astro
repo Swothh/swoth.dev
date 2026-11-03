@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar.astro';
 import Hero from '../components/Hero.astro';
 import FeaturedProject from '../components/FeaturedProject.astro';
 import ProjectList from '../components/ProjectList.astro';
+import BlogList from '../components/BlogList.astro';
 import Background from '../components/Background.astro';
 import Stack from '../components/Stack.astro';
 import Contact from '../components/Contact.astro';
@@ -16,6 +17,7 @@ import { portfolio } from '../data/portfolio';
     <Hero />
     <FeaturedProject />
     <ProjectList />
+    <BlogList />
     <Background />
     <Stack />
     <Contact />
@@ -38,66 +40,82 @@ import { portfolio } from '../data/portfolio';
   </main>
 
   <script>
-    const links = [...document.querySelectorAll('[data-nav-link]')];
-    const contactHref = '#contact';
-    let observedHref = '#overview';
+    let cleanupHomeObservers: (() => void) | null = null;
 
-    const setActiveLink = (href: string) => {
-      links.forEach((link) => {
-        link.classList.toggle('active', link.getAttribute('href') === href);
-      });
-    };
+    document.addEventListener('astro:page-load', () => {
+      cleanupHomeObservers?.();
+      cleanupHomeObservers = null;
 
-    const isAtPageEnd = () => (
-      Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 2
-    );
+      const heroIdentity = document.querySelector('[data-hero-identity]');
+      if (!heroIdentity) return;
 
-    const syncActiveLink = () => {
-      setActiveLink(isAtPageEnd() ? contactHref : observedHref);
-    };
+      const links = [...document.querySelectorAll('[data-nav-link]')];
+      const contactHref = '#contact';
+      let observedHref = '#overview';
 
-    const sections = links
-      .map((link) => document.querySelector(link.getAttribute('href') ?? ''))
-      .filter((section): section is Element => Boolean(section));
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (!visible) return;
-        observedHref = `#${visible.target.id}`;
-        syncActiveLink();
-      },
-      { rootMargin: '-20% 0px -65% 0px', threshold: [0, 0.2, 0.5] },
-    );
-
-    sections.forEach((section) => observer.observe(section));
-    window.addEventListener('scroll', syncActiveLink, { passive: true });
-    window.addEventListener('resize', syncActiveLink);
-    syncActiveLink();
-
-    const sidebar = document.querySelector('[data-sidebar]');
-    const heroIdentity = document.querySelector('[data-hero-identity]');
-
-    if (sidebar && heroIdentity) {
-      const setSidebarIdentity = (heroIsVisible: boolean) => {
-        sidebar.classList.toggle('sidebar--hero-visible', heroIsVisible);
+      const setActiveLink = (href: string) => {
+        links.forEach((link) => {
+          link.classList.toggle('active', link.getAttribute('href') === href);
+        });
       };
 
-      const heroBounds = heroIdentity.getBoundingClientRect();
-      setSidebarIdentity(heroBounds.bottom > 0 && heroBounds.top < window.innerHeight);
-
-      const identityObserver = new IntersectionObserver(
-        ([entry]) => setSidebarIdentity(entry.isIntersecting),
-        { threshold: 0 },
+      const isAtPageEnd = () => (
+        Math.ceil(window.scrollY + window.innerHeight) >= document.documentElement.scrollHeight - 2
       );
 
-      identityObserver.observe(heroIdentity);
-    }
+      const syncActiveLink = () => {
+        setActiveLink(isAtPageEnd() ? contactHref : observedHref);
+      };
 
-    document.querySelectorAll('.mobile-menu a').forEach((link) => {
-      link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'));
+      const sections = links
+        .map((link) => {
+          const href = link.getAttribute('href') ?? '';
+          return href.startsWith('#') ? document.querySelector(href) : null;
+        })
+        .filter((section): section is Element => Boolean(section));
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          const visible = entries
+            .filter((entry) => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+          if (!visible) return;
+          observedHref = `#${visible.target.id}`;
+          syncActiveLink();
+        },
+        { rootMargin: '-20% 0px -65% 0px', threshold: [0, 0.2, 0.5] },
+      );
+
+      sections.forEach((section) => observer.observe(section));
+      window.addEventListener('scroll', syncActiveLink, { passive: true });
+      window.addEventListener('resize', syncActiveLink);
+      syncActiveLink();
+
+      const sidebar = document.querySelector('[data-sidebar]');
+      let identityObserver: IntersectionObserver | null = null;
+
+      if (sidebar) {
+        const setSidebarIdentity = (heroIsVisible: boolean) => {
+          sidebar.classList.toggle('sidebar--hero-visible', heroIsVisible);
+        };
+
+        const heroBounds = heroIdentity.getBoundingClientRect();
+        setSidebarIdentity(heroBounds.bottom > 0 && heroBounds.top < window.innerHeight);
+
+        identityObserver = new IntersectionObserver(
+          ([entry]) => setSidebarIdentity(entry.isIntersecting),
+          { threshold: 0 },
+        );
+
+        identityObserver.observe(heroIdentity);
+      }
+
+      cleanupHomeObservers = () => {
+        observer.disconnect();
+        identityObserver?.disconnect();
+        window.removeEventListener('scroll', syncActiveLink);
+        window.removeEventListener('resize', syncActiveLink);
+      };
     });
   </script>
 </BaseLayout>

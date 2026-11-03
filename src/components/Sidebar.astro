@@ -1,22 +1,45 @@
 ---
 import Mark from './Mark.astro';
 
+type Props = {
+  activeSection?: 'overview' | 'projects' | 'blog' | 'background' | 'contact';
+  isHome?: boolean;
+};
+
+const { activeSection = 'overview', isHome = true } = Astro.props;
+const prefix = isHome ? '' : '/';
+
 const nav = [
-  { label: 'Overview', href: '#overview' },
-  { label: 'Projects', href: '#projects' },
-  { label: 'Background', href: '#background' },
-  { label: 'Contact', href: '#contact' },
+  { id: 'overview', label: 'Overview', href: `${prefix}#overview` },
+  { id: 'projects', label: 'Projects', href: `${prefix}#projects` },
+  { id: 'blog', label: 'Blog', href: `${prefix}#blog` },
+  { id: 'background', label: 'Background', href: `${prefix}#background` },
+  { id: 'contact', label: 'Contact', href: `${prefix}#contact` },
 ] as const;
 ---
 
-<aside class="sidebar sidebar--hero-visible fixed inset-y-0 left-0 z-10 flex w-[236px] flex-col px-9 pt-[38px] pb-8 max-[900px]:hidden" aria-label="Site navigation" data-sidebar>
-  <a class="sidebar-identity ml-4 inline-flex w-fit items-center gap-3 transition-all duration-200" href="#overview" aria-label="Back to overview">
+<aside
+  class:list={[
+    'sidebar fixed inset-y-0 left-0 z-10 flex w-[236px] flex-col px-9 pt-[38px] pb-8 max-[900px]:hidden',
+    isHome && 'sidebar--hero-visible',
+  ]}
+  aria-label="Site navigation"
+  data-sidebar
+>
+  <a class="sidebar-identity ml-4 inline-flex w-fit items-center gap-3 transition-all duration-200" href={`${prefix}#overview`} aria-label="Back to overview">
     <Mark />
   </a>
 
   <nav class="sidebar-nav mt-[72px] flex flex-col gap-1.5 transition-[margin] duration-300 ease-[cubic-bezier(0.22,1,0.36,1)]" aria-label="Portfolio sections">
-    {nav.map((item, index) => (
-      <a href={item.href} class:list={['flex items-center gap-3 py-1.5 text-[0.8125rem] text-[var(--faint)] transition-colors duration-200', { active: index === 0 }]} data-nav-link>
+    {nav.map((item) => (
+      <a
+        href={item.href}
+        class:list={[
+          'flex items-center gap-3 py-1.5 text-[0.8125rem] text-[var(--faint)] transition-colors duration-200',
+          { active: item.id === activeSection },
+        ]}
+        data-nav-link
+      >
         <span class="nav-indicator h-1 w-1 scale-[0.4] rounded-full bg-current opacity-0 transition-all duration-200" aria-hidden="true"></span>
         {item.label}
       </a>
@@ -37,14 +60,14 @@ const nav = [
 </aside>
 
 <header class="mobile-header hidden max-[900px]:fixed max-[900px]:inset-x-0 max-[900px]:top-0 max-[900px]:z-20 max-[900px]:flex max-[900px]:h-[70px] max-[900px]:items-center max-[900px]:justify-between max-[900px]:bg-gradient-to-b max-[900px]:from-[var(--mobile-header)] max-[900px]:px-7 max-[600px]:px-5">
-  <a class="inline-flex w-fit items-center gap-3" href="#overview" aria-label="Back to overview">
+  <a class="inline-flex w-fit items-center gap-3" href={`${prefix}#overview`} aria-label="Back to overview">
     <Mark />
   </a>
   <details class="mobile-menu relative">
     <summary class="flex h-[34px] w-[34px] cursor-pointer list-none flex-col items-center justify-center gap-[5px] rounded-full bg-[var(--surface)]" aria-label="Open navigation">
       <span class="menu-line h-px w-3 bg-[var(--ink)] transition-transform duration-200"></span><span class="menu-line h-px w-3 bg-[var(--ink)] transition-transform duration-200"></span>
     </summary>
-    <nav class="absolute top-11 right-0 shadow-md flex w-[156px] flex-col gap-0.5 rounded-[14px] bg-[var(--surface)] p-2" aria-label="Mobile navigation">
+    <nav class="absolute top-11 right-0 shadow-md flex w-[156px] flex-col gap-0.5 rounded-[14px] bg-[var(--surface)] p-2" aria-label="Mobile">
       {nav.map((item) => <a class="rounded-lg px-2.5 py-2 text-[0.8125rem] hover:bg-[var(--paper)]" href={item.href}>{item.label}</a>)}
     </nav>
   </details>
@@ -53,13 +76,14 @@ const nav = [
 <script>
   import { createShader, playSweep } from 'glimm';
 
-  const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
-  const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
   let transitionRunning = false;
 
   const getTheme = () => document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
 
   const applyTheme = (theme: 'light' | 'dark') => {
+    const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+    const themeColor = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+
     document.documentElement.dataset.theme = theme;
     try {
       localStorage.setItem('swoth-theme', theme);
@@ -68,66 +92,73 @@ const nav = [
     themeToggle?.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
   };
 
-  applyTheme(getTheme());
+  document.addEventListener('astro:page-load', () => {
+    const themeToggle = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+    applyTheme(getTheme());
 
-  themeToggle?.addEventListener('click', () => {
-    if (transitionRunning) return;
+    themeToggle?.addEventListener('click', () => {
+      if (transitionRunning) return;
 
-    const currentTheme = getTheme();
-    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      const currentTheme = getTheme();
+      const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
 
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      applyTheme(nextTheme);
-      return;
-    }
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        applyTheme(nextTheme);
+        return;
+      }
 
-    const canvas = document.createElement('canvas');
-    canvas.className = 'glimm-theme-canvas';
-    canvas.setAttribute('aria-hidden', 'true');
-    document.body.append(canvas);
+      const canvas = document.createElement('canvas');
+      canvas.className = 'glimm-theme-canvas';
+      canvas.setAttribute('aria-hidden', 'true');
+      document.body.append(canvas);
 
-    const shader = createShader({
-      canvas,
-      direction: currentTheme === 'dark' ? 'rtl' : 'ltr',
-      bandTight: 12,
-      waveAmount: 0.3,
-      rippleAmount: 0.65,
-      swellAmount: 0.35,
+      const shader = createShader({
+        canvas,
+        direction: currentTheme === 'dark' ? 'rtl' : 'ltr',
+        bandTight: 12,
+        waveAmount: 0.3,
+        rippleAmount: 0.65,
+        swellAmount: 0.35,
+      });
+
+      if (!shader) {
+        canvas.remove();
+        applyTheme(nextTheme);
+        return;
+      }
+
+      transitionRunning = true;
+      themeToggle.disabled = true;
+
+      let cleanedUp = false;
+      const cleanup = () => {
+        if (cleanedUp) return;
+        cleanedUp = true;
+        shader.destroy();
+        canvas.remove();
+        transitionRunning = false;
+        themeToggle.disabled = false;
+        themeToggle.focus({ preventScroll: true });
+      };
+
+      const sweep = playSweep(shader, {
+        palette: 'azure',
+        direction: currentTheme === 'dark' ? 'rtl' : 'ltr',
+        easing: 'ease',
+        sweepMs: 760,
+        outroMs: 420,
+        midpoint: 0.5,
+        peakAlpha: 0.9,
+        brightness: currentTheme === 'dark' ? 0.82 : 1,
+        onMidpoint: () => applyTheme(nextTheme),
+        onComplete: cleanup,
+      });
+
+      void sweep.done.finally(cleanup);
     });
 
-    if (!shader) {
-      canvas.remove();
-      applyTheme(nextTheme);
-      return;
-    }
-
-    transitionRunning = true;
-    themeToggle.disabled = true;
-
-    let cleanedUp = false;
-    const cleanup = () => {
-      if (cleanedUp) return;
-      cleanedUp = true;
-      shader.destroy();
-      canvas.remove();
-      transitionRunning = false;
-      themeToggle.disabled = false;
-      themeToggle.focus({ preventScroll: true });
-    };
-
-    const sweep = playSweep(shader, {
-      palette: 'azure',
-      direction: currentTheme === 'dark' ? 'rtl' : 'ltr',
-      easing: 'ease',
-      sweepMs: 760,
-      outroMs: 420,
-      midpoint: 0.5,
-      peakAlpha: 0.9,
-      brightness: currentTheme === 'dark' ? 0.82 : 1,
-      onMidpoint: () => applyTheme(nextTheme),
-      onComplete: cleanup,
+    document.querySelectorAll('.mobile-menu a').forEach((link) => {
+      link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'));
     });
-
-    void sweep.done.finally(cleanup);
   });
 </script>

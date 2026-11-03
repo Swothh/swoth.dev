@@ -1,6 +1,7 @@
 ---
 import '@fontsource-variable/manrope';
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import { portfolio } from '../data/portfolio';
 
 type Props = {
@@ -59,21 +60,29 @@ const structuredData = {
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:creator" content={portfolio.seo.socialHandle} />
+    <ClientRouter />
     <script is:inline>
       (() => {
-        let storedTheme = null;
-        try {
-          storedTheme = localStorage.getItem('swoth-theme');
-        } catch {}
-        const theme = storedTheme === 'light' || storedTheme === 'dark'
-          ? storedTheme
-          : 'light';
+        const applyStoredTheme = (doc = document) => {
+          let storedTheme = null;
+          try {
+            storedTheme = localStorage.getItem('swoth-theme');
+          } catch {}
+          const theme = storedTheme === 'light' || storedTheme === 'dark'
+            ? storedTheme
+            : 'light';
 
-        document.documentElement.dataset.theme = theme;
-        document.querySelector('meta[name="theme-color"]')?.setAttribute(
-          'content',
-          theme === 'dark' ? '#11110f' : '#f7f5f0',
-        );
+          doc.documentElement.dataset.theme = theme;
+          doc.querySelector('meta[name="theme-color"]')?.setAttribute(
+            'content',
+            theme === 'dark' ? '#11110f' : '#f7f5f0',
+          );
+        };
+
+        applyStoredTheme();
+        document.addEventListener('astro:before-swap', (event) => {
+          applyStoredTheme(event.newDocument);
+        });
       })();
     </script>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
